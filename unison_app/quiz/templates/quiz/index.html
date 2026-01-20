@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNISON SQUARE GARDEN クイズ</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #001f3f; color: white; padding: 20px; }
+        .card { background: white; color: #333; padding: 30px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .lyrics { font-size: 1.4rem; font-weight: bold; margin-bottom: 20px; min-height: 80px; display: flex; align-items: center; justify-content: center; }
+        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #001f3f; border-radius: 5px; background: white; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .btn:hover { background: #e6f0ff; }
+        #message { font-size: 1.5rem; font-weight: bold; margin: 20px 0; }
+        .next-link { color: #007bff; text-decoration: none; font-weight: bold; display: none; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>UNISON 歌詞クイズ</h1>
+    <div class="card">
+        <div class="lyrics">「{{ question.lyrics }}」</div>
+        
+        <div id="choice-area">
+            {% for choice in choices %}
+                <button class="btn" onclick="judge('{{ choice }}', '{{ question.title }}')">{{ choice }}</button>
+            {% endfor %}
+        </div>
+        
+        <div id="message"></div>
+        <a href="" id="next-btn" class="next-link">次の問題へ ＞</a>
+    </div>
+
+    <script>
+        function judge(selected, correct) {
+            const msg = document.getElementById('message');
+            const next = document.getElementById('next-btn');
+            const btns = document.querySelectorAll('.btn');
+
+            if (selected === correct) {
+                msg.innerHTML = "🎉 正解！ 🎉";
+                msg.style.color = "green";
+            } else {
+                msg.innerHTML = "💀 残念... 💀<br><small>正解は: " + correct + "</small>";
+                msg.style.color = "red";
+            }
+
+            btns.forEach(b => b.disabled = true); // 2回押せないようにする
+            next.style.display = "inline-block"; // 次の問題ボタンを出す
+        }
+    </script>
+</body>
+</html>
