@@ -3,30 +3,33 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Album, Song
 
 def quiz_view(request):
-    # 1. セッションから「未解答の曲IDリスト」を取得。なければ全曲IDを入れる
     unanswered_ids = request.session.get('unanswered_ids')
     
     if unanswered_ids is None:
-        # 初回アクセス時：全曲のIDリストを作成してシャッフル
         unanswered_ids = list(Song.objects.values_list('id', flat=True))
         random.shuffle(unanswered_ids)
         request.session['unanswered_ids'] = unanswered_ids
         request.session['total_songs'] = len(unanswered_ids)
         request.session['current_count'] = 0
+        # 正解数を初期化
+        request.session['correct_answer_count'] = 0
 
-    # 2. 全問解き終わった場合の処理
     if not unanswered_ids:
         total = request.session.get('total_songs', 0)
-        # 終わったらセッションをクリアして終了画面へ（またはリセット）
+        # セッションから正解数を取得
+        correct_count = request.session.get('correct_answer_count', 0)
         request.session['unanswered_ids'] = None 
-        return render(request, 'quiz/finished.html', {'total': total})
+        # 終了画面に正解数を渡す
+        return render(request, 'quiz/finished.html', {
+            'total': total,
+            'correct_count': correct_count
+        })
 
-    # 3. リストの先頭から1曲取り出す（ポップ）
+    # (以下、既存の処理と同じ)
     current_song_id = unanswered_ids.pop(0)
-    request.session['unanswered_ids'] = unanswered_ids # 更新して保存
-    request.session['current_count'] += 1 # カウントアップ
+    request.session['unanswered_ids'] = unanswered_ids
+    request.session['current_count'] += 1
 
-    # 表示用のデータを取得
     question_song = get_object_or_404(Song, id=current_song_id)
     all_albums = Album.objects.prefetch_related('songs').all()
 
@@ -36,33 +39,29 @@ def quiz_view(request):
         'current_count': request.session['current_count'],
         'total_songs': request.session['total_songs'],
     })
+
 def check_answer(request):
     if request.method == 'POST':
-        user_choice_id = int(request.POST.get('song_id'))      # ユーザーが選んだ曲のID
-        correct_song_id = int(request.POST.get('question_id')) # 正解の曲のID
+        user_choice_id = int(request.POST.get('song_id'))
+        correct_song_id = int(request.POST.get('question_id'))
         
-        # 1. 正解だった場合
         if user_choice_id == correct_song_id:
-            # 次の問題へリダイレクト（quizビューが呼ばれ、次の曲がセットされる）
+            # 正解の場合、セッションの正解数を +1 する
+            request.session['correct_answer_count'] = request.session.get('correct_answer_count', 0) + 1
             return redirect('quiz')
-        
-        # 2. 不正解だった場合
         else:
-            # データの取得
+            # 不正解の場合（既存の処理）
             question_song = get_object_or_404(Song, id=correct_song_id)
             selected_song = get_object_or_404(Song, id=user_choice_id)
-            
-            # 結果画面を表示（is_correctは常にFalseになる）
             return render(request, 'quiz/result.html', {
                 'is_correct': False,
                 'question_song': question_song,
                 'selected_song': selected_song,
             })
-            
     return redirect('quiz')
 
 def reset_quiz(request):
-    # セッションのデータを消去して、クイズのトップページへ戻す
     request.session['unanswered_ids'] = None
     request.session['current_count'] = 0
+    request.session['correct_answer_count'] = 0 # リセット時も初期化
     return redirect('quiz')

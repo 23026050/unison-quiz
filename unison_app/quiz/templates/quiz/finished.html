@@ -8,17 +8,25 @@
         body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; text-align: center; }
         .finish-card { background: white; padding: 40px 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .congrats { font-size: 1.8rem; font-weight: bold; color: #28a745; margin-bottom: 20px; }
+        .score-box { font-size: 1.5rem; margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 10px; }
+        .score-number { font-size: 2.5rem; color: #007bff; font-weight: bold; }
         .reset-button { 
             display: block; width: 100%; background-color: #333; color: white; 
-            text-decoration: none; padding: 18px; border-radius: 12px; font-weight: bold; 
+            text-decoration: none; padding: 18px; border-radius: 12px; font-weight: bold; margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="finish-card">
-        <div class="congrats">🎉 お疲れ様でした！</div>
-        <p>全 {{ total }} 問 解き終わりました！</p>
-        <a href="{% url 'reset_quiz' %}" class="reset-button">最初からやり直す</a>
+        <div class="congrats">🎉 クイズ終了！</div>
+        
+        <div class="score-box">
+            あなたの正解数は...<br>
+            <span class="score-number">{{ correct_count }}</span> / {{ total }} 問
+        </div>
+
+        <p>全曲マスターを目指そう！</p>
+        <a href="{% url 'reset_quiz' %}" class="reset-button">もう一度挑戦する</a>
     </div>
 </body>
 </html>
