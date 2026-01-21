@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>UNISON クイズ - アルバム選択</title></head>
+<body>
+    <h1>アルバムを選んでね</h1>
+    <ul>
+        {% for album in albums %}
+            <li><a href="{% url 'song_list' album.id %}">{{ album.title }}</a></li>
+        {% empty %}
+            <li>まだアルバムが登録されていません（管理画面から追加してね）。</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

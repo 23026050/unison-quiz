@@ -1,4 +1,6 @@
 from django.contrib import admin
-from .models import Question
+from .models import Album, Song
 
-admin.site.register(Question)
+# 管理画面でアルバムと曲を登録できるようにする
+admin.site.register(Album)
+admin.site.register(Song)

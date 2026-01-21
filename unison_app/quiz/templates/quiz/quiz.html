@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UNISON 歌詞クイズ</title>
+    <style>
+        .lyrics-box { background: #f0f0f0; padding: 20px; margin: 20px 0; font-size: 1.2em; border-left: 5px solid #000033; white-space: pre-wrap; }
+        .album-section { margin-top: 20px; }
+        .progress-bar { color: #666; font-size: 0.9em; margin-bottom: 10px; }
+        details { margin-bottom: 10px; border: 1px solid #ccc; padding: 10px; }
+        summary { cursor: pointer; font-weight: bold; }
+        button { background: none; border: none; color: blue; text-decoration: underline; cursor: pointer; }
+        button:hover { color: red; }
+    </style>
+</head>
+<body>
+    <h1>この歌詞はどの曲？</h1>
+
+    <div class="progress-bar">
+        進捗: <strong>{{ current_count }}</strong> / {{ total_songs }} 問目
+        <span style="margin-left: 20px;">
+        <a href="{% url 'reset_quiz' %}" onclick="return confirm('最初からやり直しますか？')" style="color: #666; font-size: 0.8em; text-decoration: none; border: 1px solid #ccc; padding: 2px 5px; border-radius: 3px;">最初からやり直す</a>
+    </span>
+    </div>
+
+    <div class="lyrics-box">
+        {{ question_song.lyrics }}
+    </div>
+
+    <hr>
+    <h2>アルバムから選んで解答してね</h2>
+    
+    {% for album in all_albums %}
+    <details>
+        <summary>{{ album.title }}</summary>
+        <ul>
+            {% for song in album.songs.all %}
+            <li>
+                <form action="{% url 'check_answer' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="song_id" value="{{ song.id }}">
+                    <input type="hidden" name="question_id" value="{{ question_song.id }}">
+                    <button type="submit">{{ song.title }}</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    </details>
+    {% endfor %}
+
+</body>
+</html>

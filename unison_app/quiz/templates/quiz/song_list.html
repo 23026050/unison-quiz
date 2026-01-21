@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>{{ album.title }} - 曲選択</title></head>
+<body>
+    <h1>{{ album.title }} の曲一覧</h1>
+    <ul>
+        {% for song in songs %}
+            <li><a href="{% url 'quiz' song.id %}">{{ song.title }}</a></li>
+        {% endfor %}
+    </ul>
+    <p><a href="{% url 'album_list' %}">アルバム一覧に戻る</a></p>
+</body>
+</html>

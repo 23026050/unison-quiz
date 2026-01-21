@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>結果発表</title></head>
+<body>
+    <h1>{% if is_correct %}正解！{% else %}残念...{% endif %}</h1>
+    <p>正解は：<strong>{{ question_song.title }}</strong> でした。</p>
+    {% if not is_correct %}
+        <p>あなたの回答：{{ selected_song.title }}</p>
+    {% endif %}
+    
+    <hr>
+    <a href="{% url 'quiz' %}">次の問題へ</a>
+</body>
+</html>
