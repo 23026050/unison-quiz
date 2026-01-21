@@ -29,7 +29,6 @@
             margin: 10px 0 20px;
         }
 
-        /* 進捗バー */
         .progress-bar {
             background: white;
             padding: 12px 15px;
@@ -42,7 +41,6 @@
             margin-bottom: 15px;
         }
 
-        /* 歌詞ボックス（目立つように大きく） */
         .lyrics-box {
             background: var(--card-bg);
             padding: 35px 20px;
@@ -56,6 +54,42 @@
             white-space: pre-wrap;
         }
 
+        /* ヒントボタンのスタイル */
+        .hint-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .hint-details {
+            display: inline-block;
+            width: 100%;
+        }
+
+        .hint-summary {
+            list-style: none;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            border: 2px dashed #ccc;
+            padding: 10px;
+            border-radius: 10px;
+            color: #666;
+            font-weight: bold;
+            display: inline-block;
+            width: 80%;
+        }
+
+        .hint-summary::-webkit-details-marker { display: none; }
+
+        .hint-content {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #007bff;
+            font-size: 1.1rem;
+            background: #e7f1ff;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
         h2 {
             font-size: 1rem;
             margin-bottom: 15px;
@@ -63,8 +97,7 @@
             text-align: center;
         }
 
-        /* アルバムの開閉 */
-        details {
+        details.album-item {
             background: white;
             margin-bottom: 12px;
             border-radius: 12px;
@@ -72,7 +105,7 @@
             border: 1px solid #e0e0e0;
         }
 
-        summary {
+        .album-summary {
             padding: 18px;
             cursor: pointer;
             font-weight: bold;
@@ -82,11 +115,10 @@
             justify-content: space-between;
         }
 
-        summary::after { content: '▼'; font-size: 0.8rem; color: #aaa; }
-        details[open] summary { border-bottom: 1px solid #eee; }
-        details[open] summary::after { content: '▲'; }
+        .album-summary::after { content: '▼'; font-size: 0.8rem; color: #aaa; }
+        details[open] .album-summary { border-bottom: 1px solid #eee; }
+        details[open] .album-summary::after { content: '▲'; }
 
-        /* 曲の選択ボタン（大きく押しやすく） */
         ul { list-style: none; padding: 0; margin: 0; }
         
         .song-item {
@@ -95,18 +127,16 @@
 
         .song-button {
             width: 100%;
-            padding: 20px 15px; /* 上下パディングを増やして大きく */
+            padding: 20px 15px;
             text-align: left;
             background: white;
             border: none;
-            font-size: 1.1rem; /* 文字を大きく */
+            font-size: 1.1rem;
             color: var(--text-color);
             cursor: pointer;
             display: block;
-            transition: background 0.1s;
         }
 
-        /* タップした時に色が変わる（フィードバック） */
         .song-button:active {
             background-color: #007bff;
             color: white;
@@ -132,11 +162,20 @@
 
     <div class="lyrics-box">{{ question_song.lyrics }}</div>
 
+    <div class="hint-container">
+        <details class="hint-details">
+            <summary class="hint-summary">💡 ヒント（アルバム名を表示）</summary>
+            <div class="hint-content">
+                収録アルバム：{{ question_song.album.title }}
+            </div>
+        </details>
+    </div>
+
     <h2>アルバムをタップして曲を選んでね</h2>
     
     {% for album in all_albums %}
-    <details>
-        <summary>{{ album.title }}</summary>
+    <details class="album-item">
+        <summary class="album-summary">{{ album.title }}</summary>
         <ul>
             {% for song in album.songs.all %}
             <li class="song-item">
