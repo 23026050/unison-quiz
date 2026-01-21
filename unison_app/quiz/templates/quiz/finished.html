@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全問終了！</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; text-align: center; }
+        .finish-card { background: white; padding: 40px 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .congrats { font-size: 1.8rem; font-weight: bold; color: #28a745; margin-bottom: 20px; }
+        .reset-button { 
+            display: block; width: 100%; background-color: #333; color: white; 
+            text-decoration: none; padding: 18px; border-radius: 12px; font-weight: bold; 
+        }
+    </style>
+</head>
+<body>
+    <div class="finish-card">
+        <div class="congrats">🎉 お疲れ様でした！</div>
+        <p>全 {{ total }} 問 解き終わりました！</p>
+        <a href="{% url 'reset_quiz' %}" class="reset-button">最初からやり直す</a>
+    </div>
+</body>
+</html>

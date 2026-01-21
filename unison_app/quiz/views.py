@@ -41,18 +41,24 @@ def check_answer(request):
         user_choice_id = int(request.POST.get('song_id'))      # ユーザーが選んだ曲のID
         correct_song_id = int(request.POST.get('question_id')) # 正解の曲のID
         
-        # 正解の曲データを取得
-        question_song = get_object_or_404(Song, id=correct_song_id)
-        # ユーザーが選んだ曲データを取得
-        selected_song = get_object_or_404(Song, id=user_choice_id)
+        # 1. 正解だった場合
+        if user_choice_id == correct_song_id:
+            # 次の問題へリダイレクト（quizビューが呼ばれ、次の曲がセットされる）
+            return redirect('quiz')
         
-        is_correct = (user_choice_id == correct_song_id)
-        
-        return render(request, 'quiz/result.html', {
-            'is_correct': is_correct,
-            'question_song': question_song,
-            'selected_song': selected_song,
-        })
+        # 2. 不正解だった場合
+        else:
+            # データの取得
+            question_song = get_object_or_404(Song, id=correct_song_id)
+            selected_song = get_object_or_404(Song, id=user_choice_id)
+            
+            # 結果画面を表示（is_correctは常にFalseになる）
+            return render(request, 'quiz/result.html', {
+                'is_correct': False,
+                'question_song': question_song,
+                'selected_song': selected_song,
+            })
+            
     return redirect('quiz')
 
 def reset_quiz(request):

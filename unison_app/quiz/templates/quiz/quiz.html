@@ -1,45 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UNISON 歌詞クイズ</title>
     <style>
-        .lyrics-box { background: #f0f0f0; padding: 20px; margin: 20px 0; font-size: 1.2em; border-left: 5px solid #000033; white-space: pre-wrap; }
-        .album-section { margin-top: 20px; }
-        .progress-bar { color: #666; font-size: 0.9em; margin-bottom: 10px; }
-        details { margin-bottom: 10px; border: 1px solid #ccc; padding: 10px; }
-        summary { cursor: pointer; font-weight: bold; }
-        button { background: none; border: none; color: blue; text-decoration: underline; cursor: pointer; }
-        button:hover { color: red; }
+        :root {
+            --primary-color: #000033;
+            --accent-color: #007bff;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            line-height: 1.4;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 10px 0 20px;
+        }
+
+        /* 進捗バー */
+        .progress-bar {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        /* 歌詞ボックス（目立つように大きく） */
+        .lyrics-box {
+            background: var(--card-bg);
+            padding: 35px 20px;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 6px solid var(--primary-color);
+            white-space: pre-wrap;
+        }
+
+        h2 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* アルバムの開閉 */
+        details {
+            background: white;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+        }
+
+        summary {
+            padding: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        summary::after { content: '▼'; font-size: 0.8rem; color: #aaa; }
+        details[open] summary { border-bottom: 1px solid #eee; }
+        details[open] summary::after { content: '▲'; }
+
+        /* 曲の選択ボタン（大きく押しやすく） */
+        ul { list-style: none; padding: 0; margin: 0; }
+        
+        .song-item {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .song-button {
+            width: 100%;
+            padding: 20px 15px; /* 上下パディングを増やして大きく */
+            text-align: left;
+            background: white;
+            border: none;
+            font-size: 1.1rem; /* 文字を大きく */
+            color: var(--text-color);
+            cursor: pointer;
+            display: block;
+            transition: background 0.1s;
+        }
+
+        /* タップした時に色が変わる（フィードバック） */
+        .song-button:active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .reset-btn {
+            text-decoration: none;
+            color: #d9534f;
+            border: 1px solid #d9534f;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
-    <h1>この歌詞はどの曲？</h1>
+
+    <h1>UNISON 歌詞クイズ</h1>
 
     <div class="progress-bar">
-        進捗: <strong>{{ current_count }}</strong> / {{ total_songs }} 問目
-        <span style="margin-left: 20px;">
-        <a href="{% url 'reset_quiz' %}" onclick="return confirm('最初からやり直しますか？')" style="color: #666; font-size: 0.8em; text-decoration: none; border: 1px solid #ccc; padding: 2px 5px; border-radius: 3px;">最初からやり直す</a>
-    </span>
+        <span>問目: <strong>{{ current_count }}</strong> / {{ total_songs }}</span>
+        <a href="{% url 'reset_quiz' %}" class="reset-btn" onclick="return confirm('リセットしますか？')">最初から</a>
     </div>
 
-    <div class="lyrics-box">
-        {{ question_song.lyrics }}
-    </div>
+    <div class="lyrics-box">{{ question_song.lyrics }}</div>
 
-    <hr>
-    <h2>アルバムから選んで解答してね</h2>
+    <h2>アルバムをタップして曲を選んでね</h2>
     
     {% for album in all_albums %}
     <details>
         <summary>{{ album.title }}</summary>
         <ul>
             {% for song in album.songs.all %}
-            <li>
-                <form action="{% url 'check_answer' %}" method="post" style="display:inline;">
+            <li class="song-item">
+                <form action="{% url 'check_answer' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="song_id" value="{{ song.id }}">
                     <input type="hidden" name="question_id" value="{{ question_song.id }}">
-                    <button type="submit">{{ song.title }}</button>
+                    <button type="submit" class="song-button">{{ song.title }}</button>
                 </form>
             </li>
             {% endfor %}
